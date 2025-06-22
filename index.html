@@ -1,70 +1,122 @@
 
+<script type="text/javascript">var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ClassNotes - by Akash Chaudhary</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f0f4f8;
-    }
-    header {
-      background-color: #007bff;
-      color: white;
-      padding: 1em;
-      font-size: 2em;
-    }
-    .classes {
-      display: flex;
-      justify-content: center;
-      gap: 2em;
-      flex-wrap: wrap;
-      margin: 2em;
-    }
-    .class-btn {
-      border-radius: 50%;
-      width: 120px;
-      height: 120px;
-      background-color: #ffffff;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      font-size: 1.1em;
-      border: 2px solid #007bff;
-      color: #007bff;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-    .class-btn:hover {
-      background-color: #007bff;
-      color: white;
-    }
-    footer {
-      margin-top: 3em;
-      padding: 1em;
-      font-weight: bold;
-      color: #444;
-    }
-  </style>
-</head>
-<body>
-  <header>ClassNotes - by Akash Chaudhary</header>
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
 
-  <div class="classes">
-    <a href="Class9/index.html"><div class="class-btn">Class 9</div></a>
-    <a href="Class10/index.html"><div class="class-btn">Class 10</div></a>
-    <a href="Class11/index.html"><div class="class-btn">Class 11</div></a>
-    <a href="Class12/index.html"><div class="class-btn">Class 12</div></a>
-  </div>
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
 
-  <footer>
-    Made with love ❤️ by Akash Chaudhary
-  </footer>
-</body>
-</html>
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }</script><!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ClassNotes - Innovative Homepage</title><style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}body{min-height:100vh;display:flex;flex-direction:column;transition:background-color .5s,color .5s;overflow-x:hidden}body.light-mode{background:radial-gradient(circle,#f0f0f0,#e0e8f0);color:#333}body.dark-mode{background:radial-gradient(circle,#1a1a1a,#2a2a2a);color:#e0e0e0}header{background:linear-gradient(to right,#4facfe,#00f2fe);color:#fff;text-align:center;padding:2.5rem;position:relative;box-shadow:0 4px 10px rgba(0,0,0,.2)}header h1{font-family:Georgia,serif;font-size:3.5rem;font-weight:700;text-shadow:3px 3px 6px rgba(0,0,0,.3);letter-spacing:3px;animation:fadeIn 1s ease-in}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.mode-toggle{position:fixed;top:1rem;right:1rem;background:0 0;border:none;font-size:1.5rem;color:#fff;cursor:pointer;transition:transform .3s}.mode-toggle:hover{transform:scale(1.1)}.mode-toggle::before{content:""}.date-time{font-size:1.1rem;margin:.5rem auto;text-align:center;font-style:italic}body.light-mode .date-time{color:#555}body.dark-mode .date-time{color:#b0b0b0}main{flex-grow:1;padding:2rem;display:flex;flex-direction:column;align-items:center;position:relative}.class-container{display:flex;justify-content:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap}.class-button{width:120px;height:120px;background:linear-gradient(45deg,#4facfe,#00f2fe);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;text-decoration:none;box-shadow:0 5px 15px rgba(0,0,0,.2);transition:transform .3s,background .3s}body.dark-mode .class-button{background:linear-gradient(45deg,#2a6eb4,#08c)}.class-button:hover{transform:scale(1.3);background:linear-gradient(45deg,#3a8ece,#00b4cc)}@media (max-width:600px){.class-container{flex-direction:column;align-items:center}}.quote-box{width:80%;max-width:600px;padding:1.5rem;margin-bottom:2rem;border-radius:10px;text-align:center;font-size:1.3rem}body.light-mode .quote-box{background-color:rgba(255,255,255,.8);box-shadow:0 0 10px rgba(0,0,0,.1)}body.dark-mode .quote-box{background-color:rgba(50,50,50,.8);box-shadow:0 0 10px rgba(255,255,255,.1)}.ga-box{width:80%;max-width:600px;padding:1.5rem;border-radius:10px;text-align:center;font-size:1.1rem}body.light-mode .ga-box{background-color:rgba(255,255,255,.8);box-shadow:0 0 10px rgba(0,0,0,.1)}body.dark-mode .ga-box{background-color:rgba(50,50,50,.8);box-shadow:0 0 10px rgba(255,255,255,.1)}.ga-box .question{font-weight:700;margin-bottom:.5rem}.ga-box .answer{color:#666}body.dark-mode .ga-box .answer{color:#b0b0b0}.stats-container{display:flex;justify-content:space-around;width:400px;margin-top:2rem}.stat-box{font-size:1.1rem;padding:1rem;border-radius:8px}body.light-mode .stat-box{background-color:#fff;box-shadow:0 0 8px rgba(0,0,0,.1)}body.dark-mode .stat-box{background-color:#333;box-shadow:0 0 8px rgba(255,255,255,.1)}.counter{font-size:1.5rem;font-weight:700;animation:countUp 2s ease-out}@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}footer{background:rgba(0,0,0,.1);text-align:center;padding:1.5rem;margin-top:auto}body.light-mode footer{color:#333}body.dark-mode footer{color:#e0e0e0}footer p{font-family:'Dancing Script',cursive;font-size:1.3rem;font-weight:500}.social-links a{margin:0 1rem;font-size:1.5rem;color:inherit;text-decoration:none;transition:transform .3s}.social-links a:hover{transform:scale(1.2)}</style></head><body class="light-mode"><button class="mode-toggle" onclick="toggleMode()"></button><header><h1>ClassNotes</h1></header><div class="date-time" id="dateTime">05:07 PM IST, Sunday, June 22, 2025</div><main><div class="class-container"><a href="Class9/index.html" class="class-button">Class 9</a><a href="Class10/index.html" class="class-button">Class 10</a><a href="Class11/index.html" class="class-button">Class 11</a><a href="Class12/index.html" class="class-button">Class 12</a></div><div class="quote-box" id="quoteBox"></div><div class="ga-box" id="gaBox"></div><div class="stats-container"><div class="stat-box">Chapters Available<span class="counter" id="chapters">150+</span></div><div class="stat-box">Classes Covered<span class="counter" id="classes">4</span></div></div></main><footer><p>Made with ❤️ by Akash Chaudhary</p><div class="social-links"><a href="#" aria-label="Twitter">🐦</a><a href="#" aria-label="Instagram">📸</a></div></footer><script>function toggleMode() {
+      document.body.classList.toggle('light-mode');
+      document.body.classList.toggle('dark-mode');
+      const button = document.querySelector('.mode-toggle');
+      button.textContent = document.body.classList.contains('dark-mode') ? '💡' : '💡';
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      const options = { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('dateTime').textContent = now.toLocaleString('en-US', options).replace(',', '');
+    }
+    updateDateTime();
+    setInterval(updateDateTime, 60000);
+
+    // Animate counters
+    function animateCounter(id, target) {
+      let count = 0;
+      const element = document.getElementById(id);
+      const duration = 2000;
+      const increment = target / (duration / 16);
+      const timer = setInterval(() => {
+        count += increment;
+        if (count >= target) {
+          clearInterval(timer);
+          count = target;
+        }
+        element.textContent = Math.floor(count) + (id === 'students' || id === 'chapters' ? '+' : '');
+      }, 16);
+    }
+    animateCounter('chapters', 150);
+    animateCounter('classes', 4);
+
+    // Fetch and display daily quote
+    async function updateQuote() {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0];
+      try {
+        const response = await fetch('quotes_bank.html');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const quotes = doc.getElementsByClassName('quote');
+        let dailyQuote = '';
+        for (let quote of quotes) {
+          if (quote.getAttribute('data-date') === today) {
+            dailyQuote = quote.textContent;
+            break;
+          }
+        }
+        if (!dailyQuote) dailyQuote = quotes[0]?.textContent || 'No quote available today.';
+        document.getElementById('quoteBox').textContent = dailyQuote;
+      } catch (error) {
+        document.getElementById('quoteBox').textContent = 'Error loading quote.';
+        console.error('Quote fetch error:', error);
+      }
+    }
+
+    // Fetch and display random general awareness Q&A
+    async function updateGA() {
+      try {
+        const response = await fetch('question_bank.html');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const qaPairs = doc.getElementsByClassName('qa-pair');
+        if (qaPairs.length > 0) {
+          const randomIndex = Math.floor(Math.random() * qaPairs.length);
+          const qaPair = qaPairs[randomIndex];
+          const question = qaPair.getElementsByClassName('question')[0]?.textContent || 'Question not available';
+          const answer = qaPair.getElementsByClassName('answer')[0]?.textContent || 'Answer not available';
+          document.getElementById('gaBox').innerHTML = `<p class="question">${question}</p><p class="answer">${answer}</p>`;
+        } else {
+          document.getElementById('gaBox').innerHTML = '<p class="question">No questions available</p>';
+        }
+      } catch (error) {
+        document.getElementById('gaBox').innerHTML = '<p class="question">Error loading question.</p>';
+        console.error('GA fetch error:', error);
+      }
+    }
+
+    // Initial load
+    updateQuote();
+    updateGA();</script></body></html>
