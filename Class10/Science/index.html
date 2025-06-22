@@ -1,0 +1,239 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science - Class 10 - ClassNotes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      font-family: 'Georgia', serif;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 2px;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+    }
+    .nav-button {
+      background-color: #666;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    .nav-button:hover {
+      background-color: #555;
+    }
+    main {
+      flex-grow: 1;
+      padding: 2rem;
+      text-align: center;
+    }
+    .subject-title {
+      font-family: 'Georgia', serif;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .class-context {
+      font-size: 1.25rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+    .chapter-prompt {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.75rem;
+      color: #333;
+      margin-bottom: 2rem;
+    }
+    .chapter-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .chapter-box {
+      background-color: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .chapter-box:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      background-color: #e6f3ff;
+    }
+    .chapter-box h3 {
+      font-size: 1.25rem;
+      color: #333;
+    }
+    .chapter-box p {
+      font-size: 0.875rem;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+    footer {
+      background: rgba(0, 0, 0, 0.1);
+      color: #333;
+      text-align: center;
+      padding: 1rem;
+    }
+    footer p {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ClassNotes</h1>
+  </header>
+  <div class="nav-container">
+    <a href="../index.html" class="nav-button">Back</a>
+    <a href="../../index.html" class="nav-button">Homepage</a>
+  </div>
+  <main>
+    <h2 class="subject-title">Science</h2>
+    <p class="class-context">Class 10</p>
+    <p class="chapter-prompt">Select Your Chapter</p>
+    <div class="chapter-container">
+      <div class="chapter-box" onclick="window.location.href='Chemical_Reactions_and_Equations.html'">
+        <h3>Chemical Reactions and Equations</h3>
+        <p>(रासायनिक अभिक्रियाएँ और समीकरण)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Acids_Bases_and_Salts.html'">
+        <h3>Acids, Bases and Salts</h3>
+        <p>(अम्ल, क्षार और लवण)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Metals_and_Non_Metals.html'">
+        <h3>Metals and Non-Metals</h3>
+        <p>(धातु और अधातु)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Carbon_and_its_Compounds.html'">
+        <h3>Carbon and its Compounds</h3>
+        <p>(कार्बन और इसके यौगिक)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Periodic_Classification_of_Elements.html'">
+        <h3>Periodic Classification of Elements</h3>
+        <p>(तत्वों का आवर्त वर्गीकरण)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Life_Processes.html'">
+        <h3>Life Processes</h3>
+        <p>(जीवन प्रक्रियाएँ)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Control_and_Coordination.html'">
+        <h3>Control and Coordination</h3>
+        <p>(नियंत्रण और समन्वय)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='How_do_Organisms_Reproduce.html'">
+        <h3>How do Organisms Reproduce?</h3>
+        <p>(जीव प्रजनन कैसे करते हैं?)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Heredity_and_Evolution.html'">
+        <h3>Heredity and Evolution</h3>
+        <p>(आनुवंशिकता और विकास)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Light_Reflection_and_Refraction.html'">
+        <h3>Light – Reflection and Refraction</h3>
+        <p>(प्रकाश – परावर्तन और अपवर्तन)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Human_Eye_and_Colourful_World.html'">
+        <h3>Human Eye and Colourful World</h3>
+        <p>(मानव नेत्र और रंगबिरंगा संसार)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Electricity.html'">
+        <h3>Electricity</h3>
+        <p>(विद्युत)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Magnetic_Effects_of_Electric_Current.html'">
+        <h3>Magnetic Effects of Electric Current</h3>
+        <p>(विद्युत धारा के चुंबकीय प्रभाव)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Sources_of_Energy.html'">
+        <h3>Sources of Energy</h3>
+        <p>(ऊर्जा के स्रोत)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Our_Environment.html'">
+        <h3>Our Environment</h3>
+        <p>(हमारा पर्यावरण)</p>
+      </div>
+      <div class="chapter-box" onclick="window.location.href='Management_of_Natural_Resources.html'">
+        <h3>Management of Natural Resources</h3>
+        <p>(प्राकृतिक संसाधनों का प्रबंधन)</p>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>Made with ❤️ by Akash Chaudhary</p>
+  </footer>
+</body>
+</html>
